@@ -9,7 +9,7 @@ SDN_COMM_PORT = 9898
 SEND_SLEEP = 10  # in seconds
 
 bcast_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-bcast_socket.bind(BCAST_ADDR, SDN_COMM_PORT)
+bcast_socket.bind((BCAST_ADDR, SDN_COMM_PORT))
 
 keep_listening = True
 keep_sending = True
