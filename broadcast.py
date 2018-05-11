@@ -22,6 +22,8 @@ keep_sending = True
 
 
 def stop_activity():
+    print "Stopping activities..."
+
     keep_serving = False
     keep_sending = False
 
