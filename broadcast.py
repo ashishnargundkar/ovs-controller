@@ -41,8 +41,8 @@ def do_broadcast():
 
 
 if __name__ == "__main__":
-    sender_t = threading.Thread(do_broadcast)
-    receiver_t = threading.Thread(socket_listener)
+    sender_t = threading.Thread(target=do_broadcast)
+    receiver_t = threading.Thread(target=socket_listener)
 
     sender_t.start()
     receiver_t.start()
