@@ -22,7 +22,7 @@ keep_serving = True
 keep_sending = True
 
 
-def stop_activity():
+def stop_activity(signum, frame):
     print "Stopping activities..."
 
     keep_serving = False
@@ -64,6 +64,3 @@ if __name__ == "__main__":
 
     server_t.start()
     sender_t.start()
-
-    server_t.join()
-    sender_t.join()
