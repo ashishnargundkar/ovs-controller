@@ -12,7 +12,7 @@ server_socket.bind((MY_IP_ADDR, SDN_COMM_PORT))
 server_socket.listen(5)
 
 bcast_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-bcast_socket.bind(("<broadcast>", SDN_COMM_PORT))
+bcast_socket.bind((BCAST_ADDR, SDN_COMM_PORT))
 
 sockets = [server_socket]
 
