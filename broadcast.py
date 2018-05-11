@@ -7,7 +7,7 @@ import threading
 from broadcast_config import *
 
 
-server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+server_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 server_socket.bind((MY_IP_ADDR, SDN_COMM_PORT))
 server_socket.listen(5)
 
