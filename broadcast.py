@@ -49,6 +49,8 @@ def do_broadcast():
         bcast_socket.sendall("BCAST_MSG from {}".format(MY_IP_ADDR))
         time.sleep(SEND_SLEEP)
 
+    print "Broadcaster has stopped"
+
 
 if __name__ == "__main__":
     server_t = threading.Thread(target=server_loop)
