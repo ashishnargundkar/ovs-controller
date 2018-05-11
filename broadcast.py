@@ -52,7 +52,8 @@ def do_broadcast():
 
     while keep_sending:
         # bcast_socket.sendall("BCAST_MSG from {}".format(MY_IP_ADDR))
-        bcast_socket.sendto("BCAST_MSG from {}".format(MY_IP_ADDR), BCAST_ADDR)
+        bcast_socket.sendto("BCAST_MSG from {}".format(MY_IP_ADDR),
+                            (BCAST_ADDR, SDN_COMM_PORT))
         print "Sent broadcast message"
         time.sleep(SEND_SLEEP)
 
