@@ -9,7 +9,7 @@ from broadcast_config import *
 
 server_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 server_socket.bind((MY_IP_ADDR, SDN_COMM_PORT))
-server_socket.listen(5)
+# server_socket.listen(5)
 
 bcast_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 bcast_socket.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
@@ -34,17 +34,11 @@ def server_loop():
     print "Entering server loop..."
 
     while keep_serving:
-        socs_to_read, _1, _2 = select.select(sockets, list(), list())
+        # socs_to_read, _1, _2 = select.select(sockets, list(), list())
 
-        for sock in socs_to_read:
-            if sock is server_socket:
-                client_socket, client_addrinfo = server_socket.accept()
-                sockets.append(client_socket)
-                print "Accepted a new connection from" \
-                    "{}".format(client_addrinfo)
-            else:
-                data, sender = client_socket.recvfrom(1024)
-                print "Received data \"{}\" from \"{}\"".format(data, sender)
+        # for sock in socs_to_read:
+        data, sender = server_socket.recvfrom(1024)
+        print "Received data \"{}\" from \"{}\"".format(data, sender)
 
     print "Exited server loop"
 
