@@ -38,6 +38,7 @@ def server_loop():
             print "Received data \"{}\" from \"{}\"".format(data, sender)
         except socket.error:
             print "Found no data to receive"
+            time.sleep(1)
 
     print "Exited server loop"
 
