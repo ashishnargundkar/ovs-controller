@@ -1,36 +1,50 @@
 import time
+import select
 import socket
 import signal
 import threading
 
 
+MY_IP_ADDR = "10.244.3."
 BCAST_ADDR = "10.244.39.255"
 SDN_COMM_PORT = 9898
 SEND_SLEEP = 10  # in seconds
 
+server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+server_socket.bind((MY_IP_ADDR, SDN_COMM_PORT))
+server_socket.listen()
+
 bcast_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 bcast_socket.bind((BCAST_ADDR, SDN_COMM_PORT))
 
-keep_listening = True
+sockets = [server_socket]
+
+keep_serving = True
 keep_sending = True
 
 
-def stop_listening():
-    keep_listening = False
-
-
-def stop_sending():
+def stop_activity():
+    keep_serving = False
     keep_sending = False
 
 
-signal.signal(signal.SIGINT, stop_listening)
-signal.signal(signal.SIGTERM, stop_listening)
+signal.signal(signal.SIGINT, stop_activity)
+signal.signal(signal.SIGTERM, stop_activity)
 
 
-def socket_listener():
-    while keep_listening:
-        data, sender = bcast_socket.recvfrom(1024)
-        print "Received data \"{}\" from \"{}\"".format(data, sender)
+def server_loop():
+    while keep_serving:
+        socs_to_read, _1, _2 = select.select(sockets, list(), list())
+
+        for sock in socs_to_read:
+            if sock is server_socket:
+                client_socket, client_addrinfo = server_socket.accept()
+                sockets.append(client_socket)
+                print "Accepted a new connection from" \
+                    "{}".format(client_addrinfo)
+            else:
+                data, sender = client_socket.recvfrom(1024)
+                print "Received data \"{}\" from \"{}\"".format(data, sender)
 
 
 def do_broadcast():
@@ -41,11 +55,11 @@ def do_broadcast():
 
 
 if __name__ == "__main__":
+    server_t = threading.Thread(target=server_loop)
     sender_t = threading.Thread(target=do_broadcast)
-    receiver_t = threading.Thread(target=socket_listener)
 
+    server_t.start()
     sender_t.start()
-    receiver_t.start()
 
+    server_t.join()
     sender_t.join()
-    receiver_t.join()
