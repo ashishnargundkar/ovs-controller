@@ -31,6 +31,8 @@ signal.signal(signal.SIGTERM, stop_activity)
 
 
 def server_loop():
+    print "Entering server loop..."
+
     while keep_serving:
         socs_to_read, _1, _2 = select.select(sockets, list(), list())
 
@@ -44,13 +46,18 @@ def server_loop():
                 data, sender = client_socket.recvfrom(1024)
                 print "Received data \"{}\" from \"{}\"".format(data, sender)
 
+    print "Exited server loop"
+
 
 def do_broadcast():
+    print "Entering broadcasting loop..."
+
     while keep_sending:
         bcast_socket.sendall("BCAST_MSG from {}".format(MY_IP_ADDR))
+        print "Send broadcast message"
         time.sleep(SEND_SLEEP)
 
-    print "Broadcaster has stopped"
+    print "Exited broadcasting loop"
 
 
 if __name__ == "__main__":
