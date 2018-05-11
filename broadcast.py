@@ -14,7 +14,7 @@ server_socket.setblocking(0)
 
 bcast_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 bcast_socket.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
-bcast_socket.connect((BCAST_ADDR, SDN_COMM_PORT))
+# bcast_socket.connect((BCAST_ADDR, SDN_COMM_PORT))
 
 sockets = [server_socket]
 
@@ -51,7 +51,8 @@ def do_broadcast():
     print "Entering broadcasting loop..."
 
     while keep_sending:
-        bcast_socket.sendall("BCAST_MSG from {}".format(MY_IP_ADDR))
+        # bcast_socket.sendall("BCAST_MSG from {}".format(MY_IP_ADDR))
+        bcast_socket.sendto("BCAST_MSG from {}".format(MY_IP_ADDR), BCAST_ADDR)
         print "Sent broadcast message"
         time.sleep(SEND_SLEEP)
 
