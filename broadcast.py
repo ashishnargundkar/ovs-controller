@@ -8,7 +8,7 @@ from broadcast_config import *
 
 
 server_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-server_socket.bind((MY_IP_ADDR, SDN_COMM_PORT))
+server_socket.bind((BCAST_ADDR, SDN_COMM_PORT))
 server_socket.setblocking(0)
 # server_socket.listen(5)
 
@@ -27,6 +27,9 @@ def stop_activity(signum, frame):
 
     keep_serving = False
     keep_sending = False
+
+    print keep_serving
+    print keep_sending
 
 
 signal.signal(signal.SIGINT, stop_activity)
