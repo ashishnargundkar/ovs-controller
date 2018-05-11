@@ -29,6 +29,10 @@ def stop_activity():
     keep_sending = False
 
 
+signal.signal(signal.SIGINT, stop_activity)
+signal.signal(signal.SIGTERM, stop_activity)
+
+
 def server_loop():
     print "Entering server loop..."
 
@@ -55,10 +59,6 @@ def do_broadcast():
 
 
 if __name__ == "__main__":
-    signal.signal(signal.SIGINT, stop_activity)
-    signal.signal(signal.SIGTERM, stop_activity)
-
-
     server_t = threading.Thread(target=server_loop)
     sender_t = threading.Thread(target=do_broadcast)
 
