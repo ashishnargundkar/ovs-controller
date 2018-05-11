@@ -12,6 +12,7 @@ server_socket.bind((MY_IP_ADDR, SDN_COMM_PORT))
 server_socket.listen(5)
 
 bcast_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+bcast_socket.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
 bcast_socket.connect((BCAST_ADDR, SDN_COMM_PORT))
 
 sockets = [server_socket]
