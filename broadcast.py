@@ -4,11 +4,8 @@ import socket
 import signal
 import threading
 
+from broadcast_config import *
 
-MY_IP_ADDR = "10.244.3."
-BCAST_ADDR = "10.244.39.255"
-SDN_COMM_PORT = 9898
-SEND_SLEEP = 10  # in seconds
 
 server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 server_socket.bind((MY_IP_ADDR, SDN_COMM_PORT))
