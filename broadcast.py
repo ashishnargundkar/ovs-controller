@@ -12,7 +12,7 @@ SEND_SLEEP = 10  # in seconds
 
 server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 server_socket.bind((MY_IP_ADDR, SDN_COMM_PORT))
-server_socket.listen()
+server_socket.listen(5)
 
 bcast_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 bcast_socket.bind((BCAST_ADDR, SDN_COMM_PORT))
