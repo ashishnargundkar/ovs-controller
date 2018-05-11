@@ -54,7 +54,7 @@ def do_broadcast():
 
     while keep_sending:
         bcast_socket.sendall("BCAST_MSG from {}".format(MY_IP_ADDR))
-        print "Send broadcast message"
+        print "Sent broadcast message"
         time.sleep(SEND_SLEEP)
 
     print "Exited broadcasting loop"
