@@ -1,5 +1,4 @@
 import time
-import select
 import socket
 import signal
 import threading
@@ -23,13 +22,13 @@ keep_sending = True
 
 
 def stop_activity(signum, frame):
+    global keep_serving
+    global keep_sending
+
     print "Stopping activities..."
 
     keep_serving = False
     keep_sending = False
-
-    print keep_serving
-    print keep_sending
 
 
 signal.signal(signal.SIGINT, stop_activity)
@@ -37,6 +36,8 @@ signal.signal(signal.SIGTERM, stop_activity)
 
 
 def server_loop():
+    global keep_serving
+
     print "Entering server loop..."
 
     while keep_serving:
@@ -51,6 +52,8 @@ def server_loop():
 
 
 def do_broadcast():
+    global keep_sending
+
     print "Entering broadcasting loop..."
 
     while keep_sending:
