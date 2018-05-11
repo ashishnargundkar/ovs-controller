@@ -64,3 +64,10 @@ if __name__ == "__main__":
 
     server_t.start()
     sender_t.start()
+
+    # Required for main thread to be able to listen to signals
+    while keep_serving or keep_sending:
+        pass
+
+    server_t.join()
+    sender_t.join()
