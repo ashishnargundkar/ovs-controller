@@ -46,8 +46,7 @@ def server_loop():
 
 def do_broadcast():
     while keep_sending:
-        bcast_socket.sendto("BCAST_MSG from {}".format(socket.gethostname()),
-                            (BCAST_ADDR, SDN_COMM_PORT))
+        bcast_socket.sendall("BCAST_MSG from {}".format(socket.gethostname()))
         time.sleep(SEND_SLEEP)
 
 
