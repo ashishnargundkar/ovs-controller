@@ -22,7 +22,7 @@ from ryu.lib.packet import packet
 from ryu.lib.packet import ethernet
 
 
-import request
+import requests
 
 
 class ExampleSwitch13(app_manager.RyuApp):
@@ -116,7 +116,7 @@ class ExampleSwitch13(app_manager.RyuApp):
         print("Switch {} just joined controller. Switch adderss:"
               " {}. Requesting NID...".format(dpid, switch_addr))
 
-        nid_resp = request.get(switch_addr, {"RequestType": "NID"})
+        nid_resp = requests.get(switch_addr, {"RequestType": "NID"})
         nid = nid_resp.json()["NID"]
 
         print("Mapping DPID {} to NID {}".format(dpid, nid))
@@ -130,7 +130,7 @@ class ExampleSwitch13(app_manager.RyuApp):
 
         print("Switch {} added a new port. Requesting neighbours list...")
 
-        neighbours_resp = request.get(
+        neighbours_resp = requests.get(
             switch_addr, {"RequestType": "Neighbours"})
         neighbours = neighbours_resp.json()["Neighbours"]
 
