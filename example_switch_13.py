@@ -123,7 +123,7 @@ class ExampleSwitch13(app_manager.RyuApp):
         print("Mapping DPID {} to NID {}".format(dpid, nid))
         self._dpid_to_nid[dpid] = nid
 
-    @set_ev_cls(ofp_event.EventPortAdd, MAIN_DISPATCHER)
+    @set_ev_cls(dpset.EventPortAdd, MAIN_DISPATCHER)
     def req_neighbours_list_on_port_add(self, ev):
         dpid = ev.dp.id
         nid = self._dpid_to_nid[dpid]
