@@ -15,6 +15,7 @@
 
 from ryu.base import app_manager
 from ryu.controller import ofp_event
+from ryu.controller import dpset
 from ryu.controller.handler import CONFIG_DISPATCHER, MAIN_DISPATCHER
 from ryu.controller.handler import set_ev_cls
 from ryu.ofproto import ofproto_v1_3
@@ -108,7 +109,7 @@ class ExampleSwitch13(app_manager.RyuApp):
                                   data=msg.data)
         datapath.send_msg(out)
 
-    @set_ev_cls(ofp_event.EventDP, MAIN_DISPATCHER)
+    @set_ev_cls(dpset.EventDP, MAIN_DISPATCHER)
     def req_nid_on_node_join(self, ev):
         dpid = ev.dp.id
         switch_addr = ev.dp.address
