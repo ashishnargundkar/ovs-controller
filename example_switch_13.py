@@ -143,4 +143,5 @@ class ExampleSwitch13(app_manager.RyuApp):
         self._adj_graph[nid] = neighbours
 
     def _get_ipop_ctrl_comm_address(self, ev):
-        return "{}:{}".format(ev.dp.address[0], self._ipop_ctrl_comm_port)
+        return "http://{}:{}"\
+                .format(ev.dp.address[0], self._ipop_ctrl_comm_port)
