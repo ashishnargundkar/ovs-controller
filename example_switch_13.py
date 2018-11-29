@@ -25,6 +25,7 @@ from ryu.lib.packet import ethernet
 
 import requests
 
+import config
 
 class ExampleSwitch13(app_manager.RyuApp):
     OFP_VERSIONS = [ofproto_v1_3.OFP_VERSION]
@@ -35,6 +36,7 @@ class ExampleSwitch13(app_manager.RyuApp):
         self.mac_to_port = {}
         self._dpid_to_nid = {}
         self._adj_graph = {}
+        self._ipop_ctrl_comm_port = config.IPOP_CTRL_COMM_PORT
 
     @set_ev_cls(ofp_event.EventOFPSwitchFeatures, CONFIG_DISPATCHER)
     def switch_features_handler(self, ev):
@@ -112,10 +114,10 @@ class ExampleSwitch13(app_manager.RyuApp):
     @set_ev_cls(dpset.EventDP, MAIN_DISPATCHER)
     def req_nid_on_node_join(self, ev):
         dpid = ev.dp.id
-        switch_addr = ev.dp.address
+        switch_addr = self._get_ipop_ctrl_comm_address(ev)
 
-        print("Switch {} just joined controller. Switch adderss:"
-              " {}. Requesting NID...".format(dpid, switch_addr))
+        print("Switch {} just joined controller. Querying IPOP controller"
+              " at address {} requesting NID...".format(dpid, switch_addr))
 
         nid_resp = requests.get(switch_addr, {"RequestType": "NID"})
         nid = nid_resp.json()["NID"]
@@ -127,9 +129,11 @@ class ExampleSwitch13(app_manager.RyuApp):
     def req_neighbours_list_on_port_add(self, ev):
         dpid = ev.dp.id
         nid = self._dpid_to_nid[dpid]
-        switch_addr = ev.dp.address
+        switch_addr = self._get_ipop_ctrl_comm_address(ev)
 
-        print("Switch {} added a new port. Requesting neighbours list...")
+        print("Switch {} added a new port. Querying IPOP controller"
+              "at address: {} requesting neighbours list..."
+              .format(dpid, switch_addr))
 
         neighbours_resp = requests.get(
             switch_addr, {"RequestType": "Neighbours"})
@@ -137,3 +141,6 @@ class ExampleSwitch13(app_manager.RyuApp):
 
         print("Got neighbours list {} from nid {}".format(neighbours, nid))
         self._adj_graph[nid] = neighbours
+
+    def _get_ipop_ctrl_comm_address(self, ev):
+        return "{}:{}".format(ev.dp.address[0], self._ipop_ctrl_comm_port)
