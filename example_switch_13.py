@@ -23,9 +23,13 @@ from ryu.lib.packet import packet
 from ryu.lib.packet import ethernet
 
 
+import logging
+import traceback
 import requests
 
 import config
+
+logging.basicConfig(level=logging.DEBUG)
 
 class ExampleSwitch13(app_manager.RyuApp):
     OFP_VERSIONS = [ofproto_v1_3.OFP_VERSION]
@@ -116,14 +120,20 @@ class ExampleSwitch13(app_manager.RyuApp):
         dpid = ev.dp.id
         switch_addr = self._get_ipop_ctrl_comm_address(ev)
 
-        print("Switch {} just joined controller. Querying IPOP controller"
-              " at address {} requesting NID...".format(dpid, switch_addr))
+        logging.debug(
+            "Switch {} just joined controller. Querying IPOP controller"
+            " at address {} requesting NID...".format(dpid, switch_addr))
 
-        nid_resp = requests.get(switch_addr, {"RequestType": "NID"})
-        nid = nid_resp.json()["NID"]
+        try:
+            nid_resp = requests.get(switch_addr, {"RequestType": "NID"})
+            nid = nid_resp.json()["NID"]
 
-        print("Mapping DPID {} to NID {}".format(dpid, nid))
-        self._dpid_to_nid[dpid] = nid
+            logging.debug("Mapping DPID {} to NID {}".format(dpid, nid))
+            self._dpid_to_nid[dpid] = nid
+        except Exception:
+            logging.error("An exception occurred while getting nid from"
+                          " {}".format(switch_addr))
+            logging.error(traceback.format_exc())
 
     @set_ev_cls(dpset.EventPortAdd, MAIN_DISPATCHER)
     def req_neighbours_list_on_port_add(self, ev):
@@ -131,16 +141,22 @@ class ExampleSwitch13(app_manager.RyuApp):
         nid = self._dpid_to_nid[dpid]
         switch_addr = self._get_ipop_ctrl_comm_address(ev)
 
-        print("Switch {} added a new port. Querying IPOP controller"
-              "at address: {} requesting neighbours list..."
-              .format(dpid, switch_addr))
+        logging.debug("Switch {} added a new port. Querying IPOP controller"
+                      "at address: {} requesting neighbours list..."
+                      .format(dpid, switch_addr))
 
-        neighbours_resp = requests.get(
-            switch_addr, {"RequestType": "Neighbours"})
-        neighbours = neighbours_resp.json()["Neighbours"]
+        try:
+            neighbours_resp = requests.get(
+                switch_addr, {"RequestType": "Neighbours"})
+            neighbours = neighbours_resp.json()["Neighbours"]
 
-        print("Got neighbours list {} from nid {}".format(neighbours, nid))
-        self._adj_graph[nid] = neighbours
+            logging.debug(
+                "Got neighbours list {} from nid {}".format(neighbours, nid))
+            self._adj_graph[nid] = neighbours
+        except Exception:
+            logging.error("An exception occurred while getting neighbours from"
+                          "{}".format(switch_addr))
+            logging.error(traceback.format_exc())
 
     def _get_ipop_ctrl_comm_address(self, ev):
         return "http://{}:{}"\
