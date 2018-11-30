@@ -23,9 +23,10 @@ from ryu.lib.packet import packet
 from ryu.lib.packet import ethernet
 
 
+import json
+import socket
 import logging
 import traceback
-import requests
 
 import config
 
@@ -125,7 +126,10 @@ class ExampleSwitch13(app_manager.RyuApp):
             " at address {} requesting NID...".format(dpid, switch_addr))
 
         try:
-            nid_resp = requests.get(switch_addr, {"RequestType": "NID"})
+            s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            s.connect((switch_addr, self._ipop_ctrl_comm_port))
+            s.send_msg(json.dumps({"RequestType": "NID"}))
+            nid_resp = s.recv()
             nid = nid_resp.json()["NID"]
 
             logging.debug("Mapping DPID {} to NID {}".format(dpid, nid))
@@ -146,18 +150,18 @@ class ExampleSwitch13(app_manager.RyuApp):
                       .format(dpid, switch_addr))
 
         try:
-            neighbours_resp = requests.get(
-                switch_addr, {"RequestType": "Neighbours"})
-            neighbours = neighbours_resp.json()["Neighbours"]
+            # neighbours_resp = requests.post(
+                # switch_addr, {"RequestType": "Neighbours"})
+            # neighbours = neighbours_resp.json()["Neighbours"]
 
-            logging.debug(
-                "Got neighbours list {} from nid {}".format(neighbours, nid))
-            self._adj_graph[nid] = neighbours
+            # logging.debug(
+                # "Got neighbours list {} from nid {}".format(neighbours, nid))
+            # self._adj_graph[nid] = neighbours
+            print("")
         except Exception:
             logging.error("An exception occurred while getting neighbours from"
                           "{}".format(switch_addr))
             logging.error(traceback.format_exc())
 
     def _get_ipop_ctrl_comm_address(self, ev):
-        return "http://{}:{}"\
-                .format(ev.dp.address[0], self._ipop_ctrl_comm_port)
+        return ev.dp.address[0]
