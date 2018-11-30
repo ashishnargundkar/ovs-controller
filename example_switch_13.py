@@ -127,15 +127,15 @@ class ExampleSwitch13(app_manager.RyuApp):
             " at address {} requesting NID...".format(dpid, switch_addr))
 
         try:
-            s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-            s.connect((switch_addr, self._ipop_ctrl_comm_port))
-            s.sendmsg(json.dumps({"RequestType": "NID"}).encode("utf-8"))
-            time.sleep(3)
-            nid_resp = s.recv()
-            nid = nid_resp.json()["NID"]
+            with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+                s.connect((switch_addr, self._ipop_ctrl_comm_port))
+                s.sendall(json.dumps({"RequestType": "NID"}).encode("utf-8"))
+                time.sleep(3)
+                nid_resp = s.recv()
+                nid = nid_resp.json()["NID"]
 
-            logging.debug("Mapping DPID {} to NID {}".format(dpid, nid))
-            self._dpid_to_nid[dpid] = nid
+                logging.debug("Mapping DPID {} to NID {}".format(dpid, nid))
+                self._dpid_to_nid[dpid] = nid
         except Exception:
             logging.error("An exception occurred while getting nid from"
                           " {}".format(switch_addr))
