@@ -31,7 +31,6 @@ import traceback
 
 import config
 
-logging.basicConfig(level=logging.DEBUG)
 
 class ExampleSwitch13(app_manager.RyuApp):
     OFP_VERSIONS = [ofproto_v1_3.OFP_VERSION]
@@ -122,7 +121,7 @@ class ExampleSwitch13(app_manager.RyuApp):
         dpid = ev.dp.id
         switch_addr = self._get_ipop_ctrl_comm_address(ev)
 
-        logging.debug(
+        print(
             "Switch {} just joined controller. Querying IPOP controller"
             " at address {} requesting NID...".format(dpid, switch_addr))
 
@@ -132,9 +131,10 @@ class ExampleSwitch13(app_manager.RyuApp):
                 s.sendall(json.dumps({"RequestType": "NID"}).encode("utf-8"))
                 time.sleep(3)
                 nid_resp = s.recv(4096)
-                nid = nid_resp.json()["NID"]
+                nid = json.loads(
+                    nid_resp.decode("utf-8"))["NID"]
 
-                logging.debug("Mapping DPID {} to NID {}".format(dpid, nid))
+                print("Mapping DPID {} to NID {}".format(dpid, nid))
                 self._dpid_to_nid[dpid] = nid
         except Exception:
             logging.error("An exception occurred while getting nid from"
@@ -147,19 +147,23 @@ class ExampleSwitch13(app_manager.RyuApp):
         nid = self._dpid_to_nid[dpid]
         switch_addr = self._get_ipop_ctrl_comm_address(ev)
 
-        logging.debug("Switch {} added a new port. Querying IPOP controller"
-                      "at address: {} requesting neighbours list..."
-                      .format(dpid, switch_addr))
+        print("Switch {} added a new port. Querying IPOP controller"
+              "at address: {} requesting neighbours list..."
+              .format(dpid, switch_addr))
 
         try:
-            # neighbours_resp = requests.post(
-                # switch_addr, {"RequestType": "Neighbours"})
-            # neighbours = neighbours_resp.json()["Neighbours"]
+            with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+                s.connect((switch_addr, self._ipop_ctrl_comm_port))
+                s.sendall(
+                    json.dumps({"RequestType": "Neighbours"}).encode("utf-8"))
+                time.sleep(3)
+                neighbours_resp = s.recv(4096)
+                neighbours = json.loads(
+                    neighbours_resp.decode("utf-8"))["Neighbours"]
 
-            # logging.debug(
-                # "Got neighbours list {} from nid {}".format(neighbours, nid))
-            # self._adj_graph[nid] = neighbours
-            print("")
+                print("Got neighbours {} from nid {}"
+                      .format(neighbours, nid))
+                self._dpid_to_nid[dpid] = nid
         except Exception:
             logging.error("An exception occurred while getting neighbours from"
                           "{}".format(switch_addr))
