@@ -129,7 +129,7 @@ class ExampleSwitch13(app_manager.RyuApp):
         try:
             s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             s.connect((switch_addr, self._ipop_ctrl_comm_port))
-            s.sendmsg(json.dumps({"RequestType": "NID"}))
+            s.sendmsg(json.dumps({"RequestType": "NID"}).encode("utf-8"))
             time.sleep(3)
             nid_resp = s.recv()
             nid = nid_resp.json()["NID"]
