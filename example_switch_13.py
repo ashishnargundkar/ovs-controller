@@ -131,7 +131,7 @@ class ExampleSwitch13(app_manager.RyuApp):
                 s.connect((switch_addr, self._ipop_ctrl_comm_port))
                 s.sendall(json.dumps({"RequestType": "NID"}).encode("utf-8"))
                 time.sleep(3)
-                nid_resp = s.recv()
+                nid_resp = s.recv(4096)
                 nid = nid_resp.json()["NID"]
 
                 logging.debug("Mapping DPID {} to NID {}".format(dpid, nid))
